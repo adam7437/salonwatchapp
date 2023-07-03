@@ -1,10 +1,10 @@
-import express from 'express';
-import mongoose from 'mongoose';
+import express, { json, staticvalue } from 'express';
+import { connect, connection, Schema, model } from 'mongoose';
 import { fileURLToPath } from 'url';
-import path from 'path';
+import { dirname, join } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -15,23 +15,23 @@ app.use((req, res, next) => {
 });
 
 // Connect to MongoDB
-mongoose.connect('mongodb+srv://adam7437:Ch10331iz%4083th@cluster0.ulqcv8h.mongodb.net/', {
+connect('mongodb+srv://adam7437:Ch10331iz%4083th@cluster0.ulqcv8h.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-const db = mongoose.connection;
+const db = connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
 // Configure middleware to parse JSON data & serve static files
-app.use(express.json());
+app.use(json());
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(staticvalue(join(__dirname, 'public')));
 
 // schema for the client profile
-const clientProfileSchema = new mongoose.Schema({
+const clientProfileSchema = new Schema({
   name: String,
   phone: String,
   email: String,
@@ -39,17 +39,17 @@ const clientProfileSchema = new mongoose.Schema({
 });
 
 // model for the client profile
-const ClientProfile = mongoose.model('ClientProfile', clientProfileSchema);
+const ClientProfile = model('ClientProfile', clientProfileSchema);
 
 // Define the schema for your MongoDB collection
-const appointmentSchema = new mongoose.Schema({
+const appointmentSchema = new Schema({
   name: String,
   date: Date,
   time: String,
 });
 
 // model for MongoDB collection
-const Appointment = mongoose.model('Appointment', appointmentSchema);
+const Appointment = model('Appointment', appointmentSchema);
 
 // Define API routes
 app.get('/api/appointments', async (req, res) => {
@@ -93,7 +93,7 @@ app.post('/api/client-profiles', async (req, res) => {
 
 // Serve the HTML file
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(join(__dirname, 'public', 'index.html'));
 });
 
 // Start server

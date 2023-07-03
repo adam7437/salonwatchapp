@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import AppointmentForm from './AppointmentForm';
-import AppointmentList from './AppointmentList';
-import ClientProfile from './ClientProfile';
+import AppointmentForm from './AppointmentForm.js';
+import AppointmentList from './AppointmentList.js';
+import ClientProfile from './ClientProfile.js';
+import appointmentsData from './appointmentsData.js';
 
 
 
 
 const App = () => {
-  const [appointments, setAppointments] = useState([]);
+  const [appointments, setAppointments] = useState(appointmentsData || []);
   const [selectedClient, setSelectedClient] = useState(null);
-  
+
 
 
   const addAppointment = (newAppointment) => {
