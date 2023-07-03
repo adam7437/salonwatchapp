@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "64a22ed568cf36b0aea61b4c"
+  },
+  "id": 1,
+  "name": "Jane Doe",
+  "date": "2023-07-03",
+  "time": "10:00 AM",
+  "notes": [
+    "haircut"
+  ]
+},
+{
+  "_id": {
+    "$oid": "64a22ed568cf36b0aea61b4d"
+  },
+  "id": 2,
+  "name": "Jane Smith",
+  "date": "2023-07-03",
+  "time": "2:30 PM",
+  "notes": [
+    "color service"
+  ]
+},
+{
+  "_id": {
+    "$oid": "64a22ed568cf36b0aea61b4e"
+  },
+  "id": 3,
+  "name": "Michael Hilliard",
+  "date": "2023-07-05",
+  "time": "11:00 AM",
+  "notes": [
+    ""
+  ]
+}]

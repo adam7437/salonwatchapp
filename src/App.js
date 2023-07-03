@@ -2,24 +2,24 @@ import React, { useState, useEffect } from 'react';
 import AppointmentForm from './AppointmentForm.js';
 import AppointmentList from './AppointmentList.js';
 import ClientProfile from './ClientProfile.js';
-import appointmentsData from './appointmentsData.js';
-
-
-
 
 const App = () => {
-  const [appointments, setAppointments] = useState(appointmentsData || []);
+  const [appointments, setAppointments] = useState([]);
   const [selectedClient, setSelectedClient] = useState(null);
 
-
-
   const addAppointment = (newAppointment) => {
-    setAppointments([...appointments, newAppointment]);
+    setAppointments((prevAppointments) => [...prevAppointments, newAppointment]);
   };
-  
+
+  const deleteAppointment = (id) => {
+    const updatedAppointments = appointments.filter(appointment => appointment.id !== id);
+    setAppointments(updatedAppointments);
+  };
+
   const handleSelectClient = (client) => {
     setSelectedClient(client);
   };
+
   const saveNote = (clientId, note) => {
     const updatedAppointments = appointments.map((appointment) => {
       if (appointment.id === clientId) {
@@ -33,6 +33,7 @@ const App = () => {
 
     setAppointments(updatedAppointments);
   };
+  
   useEffect(() => {
     fetch('/api/appointments')
   .then(response => {
@@ -48,10 +49,8 @@ const App = () => {
   .catch(error => {
     console.error('Error retrieving appointments:', error);
   });
-  
-
-
-  }, []);
+  }, 
+  []);
 
   return (
     <div>
@@ -60,7 +59,8 @@ const App = () => {
       <AppointmentList
         appointments={appointments}
         saveNote={saveNote}
-        handleSelectClient={handleSelectClient} // Pass the handleSelectClient function to AppointmentList
+        handleSelectClient={handleSelectClient}
+        deleteAppointment={deleteAppointment} // Pass the handleSelectClient function to AppointmentList
       />
       {selectedClient && (
         <ClientProfile
