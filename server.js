@@ -9,16 +9,46 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use((req, res, next) => {
-  res.setHeader('Content-Type', 'application/json');
-  next();
-});
-
 const mongoURI = 'mongodb+srv://adamh7437:password1188@salonwatch.zagpl6v.mongodb.net/?retryWrites=true&w=majority';
 const dbName = 'salonwatch';
 
 let db;
+async function createAppointmentCollection() {
+  const appointmentSchema = {
+    bsonType: 'object',
+    required: ['name', 'date', 'time', 'notes'],
+    properties: {
+      name: {
+        bsonType: 'string',
+        description: 'Name of the appointment',
+      },
+      date: {
+        bsonType: 'date',
+        description: 'Date of the appointment',
+      },
+      time: {
+        bsonType: 'string',
+        description: 'Time of the appointment',
+      },
+      notes: {
+        bsonType: 'array',
+        description: 'Notes for the appointment',
+        items: {
+          bsonType: 'string',
+        },
+      },
+    },
+  };
 
+  await db.createCollection('appointments');
+  await db.command({
+    collMod: 'appointments',
+    validator: {
+      $jsonSchema: appointmentSchema,
+    },
+  });
+  console.log('Appointment collection created with schema validation');
+}
 async function connectToMongo() {
   try {
     const client = new MongoClient(mongoURI, {
@@ -32,24 +62,7 @@ async function connectToMongo() {
     console.error('Error connecting to MongoDB:', error);
   }
 }
-
-connectToMongo();
-
-// Configure middleware to parse JSON data & serve static files
-app.use(express.json());
-
-app.use(express.static(join(__dirname, 'public')));
-
-// Define API routes
-app.get('/api/appointments', async (req, res) => {
-  try {
-    const appointments = await db.collection('appointments').find().toArray();
-    res.json(appointments);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
+//create an appointment
 app.post('/api/appointments', async (req, res) => {
   try {
     const appointment = req.body;
@@ -59,33 +72,49 @@ app.post('/api/appointments', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-app.get('/api/client-profiles', async (req, res) => {
+//read all appointments
+app.get('/api/appointments', async (req, res) => {
   try {
-    const clientProfiles = await db.collection('clientProfiles').find().toArray();
-    res.json(clientProfiles);
+    const appointments = await db.collection('appointments').find().toArray();
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error'});
   }
 });
-
-app.post('/api/client-profiles', async (req, res) => {
+ //update an appointment
+ app.put('/api/appointments/:id', async (req, res) => {
   try {
-    const clientProfile = req.body;
-    await db.collection('clientProfiles').insertOne(clientProfile);
-    res.status(201).json(clientProfile);
+    const appointmentId = req.params.id;
+    const updatedData = req.body;
+    const result = await db.collection('appointments').updateOne(
+      { _id: ObjectId(appointmentId) },
+      { $set: updatedData }
+    );
+    if (result.matchedCount ===0) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+    res.json({ message: 'Appointment updated successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' });
+  } 
+ });
+//delete an appointment 
+app.delete('/api/appointments/:id', async (req,res) => {
+  try {
+    const appointmentId = req.params.id;
+    const result = await db.collection('appointments').deleteOne({ _id: ObjectId(appointmentId) });
+    if (result.deleteCount ===0) {
+      return res.status(404).json({ error: 'Appointment not found' });
+    }
+    res.json({ message: 'Appointment deleted successfully' });
+  } catch (error) {
+    res.status(404).json({ error: 'Internal server error' });
   }
 });
+ 
+connectToMongo();
 
-// Serve the HTML file
-app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'public', 'index.html'));
-});
 
-// Start server
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

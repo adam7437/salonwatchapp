@@ -19,14 +19,14 @@ const ClientProfile = ({ client, saveNote, cancelEdit, updateAppointment }) => {
     setNote('');
   };
 
-  const handleUpdateAppointment = () => {
+  const handleUpdateAppointment = (appointment, updatedDate, updatedTime) => {
     const updatedAppointment = {
-      ...client,
+      ...appointment,
       date: updatedDate,
       time: updatedTime,
     };
-
-    updateAppointment(client.id, updatedAppointment);
+  
+    updateAppointment(appointment.id, updatedAppointment);
     cancelEdit();
   };
 

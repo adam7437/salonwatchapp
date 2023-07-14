@@ -55,6 +55,7 @@ const AppointmentList = ({ appointments, saveNote, deleteAppointment, updateAppo
                   client={appointment}
                   saveNote={handleSaveNote}
                   cancelEdit={handleCancelEdit}
+                  updateAppointment={updateAppointment}
                 />
                 <button onClick={() => handleUpdateAppointment({ ...appointment, date: updatedDate, time: updatedTime })}>Save</button>
                 <button onClick={handleCancelEdit}>Cancel</button>
@@ -63,7 +64,7 @@ const AppointmentList = ({ appointments, saveNote, deleteAppointment, updateAppo
               <>
                 <p>Date: {appointment.date.toString()}</p>
                 <p>Time: {appointment.time}</p>
-                <ClientProfile client={appointment} saveNote={saveNote} />
+                <ClientProfile client={appointment} handleSaveNote={saveNote} />
                 <button onClick={() => handleEdit(appointment)}>Edit</button>
               </>
             )}
