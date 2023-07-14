@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import AppointmentForm from './AppointmentForm.js';
 import AppointmentList from './AppointmentList.js';
-import ClientProfile from './ClientProfile.js';
+
 
 const App = () => {
   const [appointments, setAppointments] = useState([]);
-  const [selectedClient, setSelectedClient] = useState(null);
-
+ 
+  
   const addAppointment = (newAppointment) => {
     setAppointments((prevAppointments) => [...prevAppointments, newAppointment]);
   };
@@ -16,8 +16,8 @@ const App = () => {
     setAppointments(updatedAppointments);
   };
 
-  const handleSelectClient = (client) => {
-    setSelectedClient(client);
+  const updateAppointment = (id, updatedData) => {
+    // Implement the updateAppointment logic here
   };
 
   const saveNote = (clientId, note) => {
@@ -36,21 +36,19 @@ const App = () => {
   
   useEffect(() => {
     fetch('/api/appointments')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not OK');
-    }
-    return response.json();
-  })
-  .then(data => {
-    // Handle the retrieved data
-    console.log(data);
-  })
-  .catch(error => {
-    console.error('Error retrieving appointments:', error);
-  });
-  }, 
-  []);
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not OK');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Appointments data:', data);
+      })
+      .catch(error => {
+        console.error('Error retrieving appointments:', error);
+      });
+  }, []);
 
   return (
     <div>
@@ -59,16 +57,12 @@ const App = () => {
       <AppointmentList
         appointments={appointments}
         saveNote={saveNote}
-        handleSelectClient={handleSelectClient}
-        deleteAppointment={deleteAppointment} // Pass the handleSelectClient function to AppointmentList
+        deleteAppointment={deleteAppointment}
+        updateAppointment={updateAppointment}
       />
-      {selectedClient && (
-        <ClientProfile
-          client={selectedClient}
-          saveNote={saveNote}
-        />
-      )}
+     
     </div>
   );
 };
+
 export default App;
