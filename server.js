@@ -79,6 +79,8 @@ app.get('/api/appointments', async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: 'Internal server error'});
   }
+  res.json(appointments);
+
 });
  //update an appointment
  app.put('/api/appointments/:id', async (req, res) => {
