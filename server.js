@@ -1,5 +1,5 @@
-import express, { json, staticvalue } from 'express';
-import { connect, connection, Schema, model } from 'mongoose';
+import express from 'express';
+import mongoose, { Schema } from 'mongoose';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
@@ -15,20 +15,20 @@ app.use((req, res, next) => {
 });
 
 // Connect to MongoDB
-connect('mongodb+srv://adam7437:Ch10331iz%4083th@cluster0.ulqcv8h.mongodb.net/', {
+mongoose.connect('mongodb+srv://adam7437:Ch10331iz%4083th@cluster0.ulqcv8h.mongodb.net/', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-const db = connection;
+const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 
 // Configure middleware to parse JSON data & serve static files
-app.use(json());
+app.use(express.json());
 
-app.use(staticvalue(join(__dirname, 'public')));
+app.use(express.static(join(__dirname, 'public')));
 
 // schema for the client profile
 const clientProfileSchema = new Schema({
@@ -39,7 +39,7 @@ const clientProfileSchema = new Schema({
 });
 
 // model for the client profile
-const ClientProfile = model('ClientProfile', clientProfileSchema);
+const ClientProfile = mongoose.model('ClientProfile', clientProfileSchema);
 
 // Define the schema for your MongoDB collection
 const appointmentSchema = new Schema({
@@ -49,7 +49,7 @@ const appointmentSchema = new Schema({
 });
 
 // model for MongoDB collection
-const Appointment = model('Appointment', appointmentSchema);
+const Appointment = mongoose.model('Appointment', appointmentSchema);
 
 // Define API routes
 app.get('/api/appointments', async (req, res) => {
