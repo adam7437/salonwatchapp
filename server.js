@@ -1,7 +1,8 @@
 import express from 'express';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,10 +59,8 @@ async function connectToMongo() {
     await client.connect();
     db = client.db(dbName);
     console.log('Connected to MongoDB');
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-  }
-}
+  
+
 //create an appointment
 app.post('/api/appointments', async (req, res) => {
   try {
@@ -113,10 +112,11 @@ app.delete('/api/appointments/:id', async (req,res) => {
   }
 });
  
-connectToMongo();
-
-
-
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+} catch (error) {
+  console.error('Error connecting to MongoDB:', error);
+}
+}
+connectToMongo();
